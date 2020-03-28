@@ -28,17 +28,17 @@ OCFLAGS		:= -O srec
 
 # Files
 HDRS		:=
-SRCS		:= ECE3375_Lab3_Geoffrey_Nielsen.c
+SRCS		:= 3375_Project.c
 OBJS		:= $(patsubst %, %.o, $(SRCS))
 
 # Targets
-COMPILE: ECE3375_Lab3_Geoffrey_Nielsen.srec
+COMPILE: 3375_Project.srec
 
-ECE3375_Lab3_Geoffrey_Nielsen.srec: ECE3375_Lab3_Geoffrey_Nielsen.axf
+3375_Project.srec: 3375_Project.axf
 	$(RM) $@
 	$(OC) $(OCFLAGS) $< $@
 
-ECE3375_Lab3_Geoffrey_Nielsen.axf: $(OBJS)
+3375_Project.axf: $(OBJS)
 	$(RM) $@
 	$(CC) $(LDFLAGS) $(OBJS) -o $@
 
@@ -51,5 +51,5 @@ ECE3375_Lab3_Geoffrey_Nielsen.axf: $(OBJS)
 	$(AS) $(ASFLAGS) $< -o $@
 
 CLEAN: 
-	$(RM) ECE3375_Lab3_Geoffrey_Nielsen.srec ECE3375_Lab3_Geoffrey_Nielsen.axf $(OBJS)
+	$(RM) 3375_Project.srec 3375_Project.axf $(OBJS)
 
