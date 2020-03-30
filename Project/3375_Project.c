@@ -19,23 +19,63 @@ volatile int Yaw;
 //Functions
 int Switch_Read(void); //Return value from 8 switches
 int Button_Read(void); //Return value from buttons
-int PWM(void);         //Create PWM signals duity cycle
+int Drive(int Sensor, int User);
+int PWM(int dutycycle);         //Create PWM signals duity cycle
 int Timer(void);       //run timer interrupt
 void TimerConfig();    //Set up timer
-void LED_Test(int value);
+//void LED_Test(int value);
+volatile int Control = 0;
 
-int main(void){
+int main(void){ :)
   TimerConfig();
 
   while(1){
     //Sensor inputs
     ADC_Barometer = Switch_Read(); //Return ADC value for altitude
-    Button_Read();
+    Control = Button_read();
+    Drive(ADC_Barometer, Control);
+
+    if (Timer() == 0x1){
+    *(LED_ptr) ^= 0x1;
+    }
     //Control
     //Outputs
+    PWM(250);
   }
 }
 
+int Switch_Read(void){
+  return * Switch_ptr&0xFF; //return value of switch 0-7
+}
+
+int Button_Read(void){
+  return *(Btn_ptr) &= 0xF; //return value of buttons 0-3
+}
+
+int Drive(int Sensor, int User){
+
+}
+
+int PWM(int DutyCycle){
+
+}
+
+void TimerConfig(){
+  int counter = 1000000; // 1/(100 MHz) x 1x10^6 = 10 msec
+  *(interval_timer_ptr + 0x2) = (counter & 0xFFFF);
+  *(interval_timer_ptr + 0x3) = (counter >> 16) & 0xFFFF;
+  /* start interval timer, enable its interrupts */
+  *(interval_timer_ptr + 1) = 0x3; // STOP = 0, START = 0, CONT = 1, ITO = 1
+}
+
+int Timer(){
+  if ((* interval_timer_ptr & 0x01) == 0x01){
+    * interval_timer_ptr = 0x0;
+  }
+  return 0x1;
+}
+
+/*//Test button
 void LED_Test(int value){
   if(value == 0x1){
     *(LED_ptr) |= 0x1;
@@ -53,26 +93,4 @@ void LED_Test(int value){
     *(LED_ptr) &= ~0xF;
   }
 }
-
-int Switch_Read(void){
-  return * Switch_ptr&0xFF; //return value of switch 0-7
-}
-
-int Button_Read(void){
-  return *(Btn_ptr) &= 0xF; //return value of buttons 0-3
-}
-
-void TimerConfig(){
-  int counter = 1000000; // 1/(100 MHz) x 1x10^6 = 10 msec
-  *(interval_timer_ptr + 0x2) = (counter & 0xFFFF);
-  *(interval_timer_ptr + 0x3) = (counter >> 16) & 0xFFFF;
-  /* start interval timer, enable its interrupts */
-  *(interval_timer_ptr + 1) = 0x3; // STOP = 0, START = 0, CONT = 1, ITO = 1
-}
-
-int Timer(){
-  if ((* interval_timer_ptr & 0x01) == 0x01){
-    * interval_timer_ptr = 0x0;
-  }
-  return 0x1;
-}
+*/
